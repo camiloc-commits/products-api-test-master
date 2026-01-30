@@ -1,39 +1,46 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const connectDB = require('./config/database');
+const { notFound, errorHandler } = require('./middlewares/errorHandler');
 
-// Cargar variables de entorno
 dotenv.config();
+
+if (!process.env.JWT_SECRET) {
+  console.error('ERROR: JWT_SECRET no definido');
+  process.exit(1);
+}
+
+if (!process.env.MONGODB_URI) {
+  console.error('ERROR: MONGODB_URI no definido');
+  process.exit(1);
+}
 
 const app = express();
 
-// Middlewares
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Conectar a base de datos
 connectDB();
 
-// Rutas
+app.get('/health', (req, res) => {
+  res.json({ success: true, status: 'OK', timestamp: new Date().toISOString() });
+});
+
 app.use('/api/products', require('./routes/products'));
 app.use('/api/users', require('./routes/users'));
 
-// Ruta de prueba
 app.get('/', (req, res) => {
   res.json({ message: 'API funcionando correctamente' });
 });
 
-// Middleware de manejo de errores
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Algo salió mal!' });
-});
+app.use(notFound);
+app.use(errorHandler);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`Ambiente: ${process.env.NODE_ENV}`);
 });

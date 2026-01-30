@@ -1,26 +1,37 @@
-### =============================================
-### Variables
-### =============================================
 @baseUrl = http://localhost:3000/api
-@token = {{login.response.body.token}}
+@token = {{login.response.body.data.token}}
+@adminToken = {{loginAdmin.response.body.data.token}}
 
-### =============================================
+### ========================================
 ### USUARIOS
-### =============================================
+### ========================================
 
-### Registrar usuario
+### Registrar usuario (rol: user)
 POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
-  "name": "Test User",
+  "username": "testuser",
   "email": "test@example.com",
   "password": "123456"
 }
 
 ###
 
-### Iniciar sesión (guarda el token automáticamente)
+### Registrar usuario (rol: admin)
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+  "username": "adminuser",
+  "email": "admin@example.com",
+  "password": "admin123",
+  "role": "admin"
+}
+
+###
+
+### Login usuario normal
 # @name login
 POST {{baseUrl}}/users/login
 Content-Type: application/json
@@ -30,16 +41,39 @@ Content-Type: application/json
   "password": "123456"
 }
 
-### =============================================
-### PRODUCTOS
-### =============================================
+###
 
-### Listar todos los productos
+### Login usuario admin
+# @name loginAdmin
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}
+
+### ========================================
+### PRODUCTOS - CRUD
+### ========================================
+
+### GET - Listar todos los productos
 GET {{baseUrl}}/products
 
 ###
 
-### Crear producto (requiere autenticación)
+### GET - Listar por categoria
+GET {{baseUrl}}/products?category=electronics
+
+###
+
+### GET - Obtener producto por ID
+@productId = 697d35dc54aee5e62364c2cd
+GET {{baseUrl}}/products/{{productId}}
+
+###
+
+### POST - Crear producto electronics
 POST {{baseUrl}}/products
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -47,19 +81,74 @@ Authorization: Bearer {{token}}
 {
   "name": "Laptop Gaming",
   "price": 999.99,
-  "description": "Laptop para gaming de alta gama",
-  "stock": 10
+  "description": "Laptop de alta gama",
+  "stock": 10,
+  "category": "electronics"
 }
 
 ###
 
-### Obtener un producto por ID
-@productId = REEMPLAZAR_CON_ID
-GET {{baseUrl}}/products/{{productId}}
+### POST - Crear producto clothing
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Camiseta Negra",
+  "price": 29.99,
+  "description": "Camiseta algodon 100%",
+  "stock": 50,
+  "category": "clothing"
+}
 
 ###
 
-### Actualizar producto (requiere autenticación)
+### POST - Crear producto food
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Cafe Premium",
+  "price": 15.99,
+  "description": "Cafe colombiano",
+  "stock": 100,
+  "category": "food"
+}
+
+###
+
+### POST - Crear producto books
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Clean Code",
+  "price": 45.00,
+  "description": "Libro de Robert C. Martin",
+  "stock": 25,
+  "category": "books"
+}
+
+###
+
+### POST - Crear producto other
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Mouse Pad XL",
+  "price": 19.99,
+  "description": "Mouse pad gaming",
+  "stock": 75,
+  "category": "other"
+}
+
+###
+
+### PUT - Actualizar producto
 PUT {{baseUrl}}/products/{{productId}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -67,43 +156,20 @@ Authorization: Bearer {{token}}
 {
   "name": "Laptop Gaming Pro",
   "price": 1199.99,
-  "stock": 5
+  "description": "Laptop edicion pro",
+  "stock": 5,
+  "category": "electronics"
 }
 
 ###
 
-### Eliminar producto (requiere autenticación)
+### DELETE - Eliminar producto
 DELETE {{baseUrl}}/products/{{productId}}
 Authorization: Bearer {{token}}
 
-###
+### ========================================
+### HEALTH CHECK
+### ========================================
 
-### =============================================
-### EJEMPLOS ADICIONALES
-### =============================================
-
-### Crear segundo producto
-POST {{baseUrl}}/products
-Content-Type: application/json
-Authorization: Bearer {{token}}
-
-{
-  "name": "Mouse Inalámbrico",
-  "price": 29.99,
-  "description": "Mouse ergonómico bluetooth",
-  "stock": 50
-}
-
-###
-
-### Crear tercer producto
-POST {{baseUrl}}/products
-Content-Type: application/json
-Authorization: Bearer {{token}}
-
-{
-  "name": "Teclado Mecánico",
-  "price": 89.99,
-  "description": "Teclado mecánico RGB",
-  "stock": 25
-}
+### Verificar estado del servidor
+GET http://localhost:3000/health
