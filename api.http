@@ -1,0 +1,109 @@
+### =============================================
+### Variables
+### =============================================
+@baseUrl = http://localhost:3000/api
+@token = {{login.response.body.token}}
+
+### =============================================
+### USUARIOS
+### =============================================
+
+### Registrar usuario
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "123456"
+}
+
+###
+
+### Iniciar sesión (guarda el token automáticamente)
+# @name login
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "123456"
+}
+
+### =============================================
+### PRODUCTOS
+### =============================================
+
+### Listar todos los productos
+GET {{baseUrl}}/products
+
+###
+
+### Crear producto (requiere autenticación)
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Laptop Gaming",
+  "price": 999.99,
+  "description": "Laptop para gaming de alta gama",
+  "stock": 10
+}
+
+###
+
+### Obtener un producto por ID
+@productId = REEMPLAZAR_CON_ID
+GET {{baseUrl}}/products/{{productId}}
+
+###
+
+### Actualizar producto (requiere autenticación)
+PUT {{baseUrl}}/products/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Laptop Gaming Pro",
+  "price": 1199.99,
+  "stock": 5
+}
+
+###
+
+### Eliminar producto (requiere autenticación)
+DELETE {{baseUrl}}/products/{{productId}}
+Authorization: Bearer {{token}}
+
+###
+
+### =============================================
+### EJEMPLOS ADICIONALES
+### =============================================
+
+### Crear segundo producto
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Mouse Inalámbrico",
+  "price": 29.99,
+  "description": "Mouse ergonómico bluetooth",
+  "stock": 50
+}
+
+###
+
+### Crear tercer producto
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Teclado Mecánico",
+  "price": 89.99,
+  "description": "Teclado mecánico RGB",
+  "stock": 25
+}
