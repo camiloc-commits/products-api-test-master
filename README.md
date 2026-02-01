@@ -118,10 +118,17 @@ mongod
 ## Arquitectura del proyecto
 
 ```
-├── config/         # Configuración de BD y servicios
-├── models/         # Modelos de Mongoose
-├── routes/         # Rutas de la API
-├── server.js       # Punto de entrada
+├── config/         # Configuración de la base de datos
+├── controllers/    # Lógica de negocio (usuarios, productos)
+├── middlewares/    # Middlewares de autenticación, validación y errores
+├── models/         # Modelos de Mongoose (User, Product)
+├── routes/         # Rutas de la API (users, products)
+├── utils/          # Utilidades (generar token, helpers)
+├── api.http        # Pruebas de endpoints para REST Client
+├── server.js       # Punto de entrada principal
 ├── Dockerfile      # Imagen Docker de la API
-└── docker-compose.yml  # Orquestación de servicios
+├── docker-compose.yml  # Orquestación de servicios
+├── .env            # Variables de entorno
+├── .env.example    # Ejemplo de configuración de entorno
+└── package.json    # Dependencias y scripts
 ```
