@@ -24,7 +24,7 @@ const validateProduct = (req, res, next) => {
   const result = productSchema.safeParse(req.body);
   
   if (!result.success) {
-    const errors = result.error.errors.map(e => e.message);
+    const errors = result.error.issues.map(e => e.message);
     return res.status(400).json({ success: false, errors });
   }
   
@@ -36,7 +36,7 @@ const validateRegister = (req, res, next) => {
   const result = registerSchema.safeParse(req.body);
   
   if (!result.success) {
-    const errors = result.error.errors.map(e => e.message);
+    const errors = result.error.issues.map(e => e.message);
     return res.status(400).json({ success: false, errors });
   }
   
@@ -48,7 +48,7 @@ const validateLogin = (req, res, next) => {
   const result = loginSchema.safeParse(req.body);
   
   if (!result.success) {
-    const errors = result.error.errors.map(e => e.message);
+    const errors = result.error.issues.map(e => e.message);
     return res.status(400).json({ success: false, errors });
   }
   
