@@ -68,7 +68,7 @@ GET {{baseUrl}}/products?category=electronics
 ###
 
 ### GET - Obtener producto por ID
-@productId = 697d35dc54aee5e62364c2cd
+@productId = 6980aa0c2429425d8c30f6a9
 GET {{baseUrl}}/products/{{productId}}
 
 ###

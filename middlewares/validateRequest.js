@@ -1,62 +1,58 @@
+const { z } = require('zod');
+
+const productSchema = z.object({
+  name: z.string({ required_error: 'Name is required' }).min(1, 'Name is required'),
+  description: z.string().optional(),
+  price: z.number({ required_error: 'Price is required', invalid_type_error: 'Price must be a number' }).min(0, 'Price must be positive'),
+  stock: z.number().min(0, 'Stock must be positive').optional(),
+  category: z.enum(['electronics', 'clothing', 'food', 'books', 'other'], { required_error: 'Category is required', invalid_type_error: 'Invalid category' })
+});
+
+const registerSchema = z.object({
+  username: z.string({ required_error: 'Username is required' }).min(1, 'Username is required'),
+  email: z.string({ required_error: 'Email is required' }).email('Invalid email'),
+  password: z.string({ required_error: 'Password is required' }).min(6, 'Password must be at least 6 characters'),
+  role: z.enum(['user', 'admin']).optional()
+});
+
+const loginSchema = z.object({
+  email: z.string({ required_error: 'Email is required' }).email('Invalid email'),
+  password: z.string({ required_error: 'Password is required' }).min(1, 'Password is required')
+});
+
 const validateProduct = (req, res, next) => {
-  const { name, price, category } = req.body;
-  const errors = [];
-
-  if (!name || typeof name !== 'string' || name.trim().length < 1) {
-    errors.push('Nombre requerido');
-  }
-
-  if (price === undefined || typeof price !== 'number' || price < 0) {
-    errors.push('Precio invalido');
-  }
-
-  const validCategories = ['electronics', 'clothing', 'food', 'books', 'other'];
-  if (!category || !validCategories.includes(category)) {
-    errors.push('Categoria invalida');
-  }
-
-  if (errors.length > 0) {
+  const result = productSchema.safeParse(req.body);
+  
+  if (!result.success) {
+    const errors = result.error.errors.map(e => e.message);
     return res.status(400).json({ success: false, errors });
   }
-
+  
+  req.body = result.data;
   next();
 };
 
 const validateRegister = (req, res, next) => {
-  const { username, email, password } = req.body;
-  const errors = [];
-
-  if (!username || username.trim().length < 1) {
-    errors.push('Username requerido');
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !emailRegex.test(email)) {
-    errors.push('Email invalido');
-  }
-
-  if (!password || password.length < 6) {
-    errors.push('Password minimo 6 caracteres');
-  }
-
-  if (errors.length > 0) {
+  const result = registerSchema.safeParse(req.body);
+  
+  if (!result.success) {
+    const errors = result.error.errors.map(e => e.message);
     return res.status(400).json({ success: false, errors });
   }
-
+  
+  req.body = result.data;
   next();
 };
 
 const validateLogin = (req, res, next) => {
-  const { email, password } = req.body;
-  const errors = [];
-
-  if (!email) errors.push('Email requerido');
-  if (!password) errors.push('Password requerido');
-
-  if (errors.length > 0) {
+  const result = loginSchema.safeParse(req.body);
+  
+  if (!result.success) {
+    const errors = result.error.errors.map(e => e.message);
     return res.status(400).json({ success: false, errors });
   }
-
+  
+  req.body = result.data;
   next();
 };
 
@@ -64,7 +60,7 @@ const validateObjectId = (req, res, next) => {
   const { id } = req.params;
   
   if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-    return res.status(400).json({ success: false, message: 'ID invalido' });
+    return res.status(400).json({ success: false, message: 'Invalid ID' });
   }
 
   next();
